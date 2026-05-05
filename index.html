@@ -92,6 +92,37 @@ select{
   margin-bottom:15px;
 }
 
+/* SEARCH */
+.search-box{
+  position:relative;
+  margin-bottom:15px;
+}
+
+.search-box input{
+  width:100%;
+  padding:14px 45px 14px 14px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.05);
+  color:white;
+  outline:none;
+  transition:0.25s;
+}
+
+.search-box input:focus{
+  border:1px solid #22c55e;
+  box-shadow:0 0 10px rgba(34,197,94,0.3);
+}
+
+.search-box span{
+  position:absolute;
+  right:15px;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:14px;
+  color:#94a3b8;
+}
+
 /* CARD */
 .card{
   padding:16px;
@@ -184,23 +215,20 @@ select{
 
 <div class="container">
 
-<!-- HEADER -->
 <div class="header">
   <div class="logo">XL AXIS PREMIUM</div>
   <div class="marquee">
-    <span>  ⚡ Jika stok habis silahkan Pesan stok di admin / pesan stok malam kuota masuk jam 9 pagi | Stok di perbarui tiap hari 09:00| Join grup WhatsApp untuk info kuota lain ⚡</span>
+    <span>⚡ Jika stok habis silahkan pesan ke admin | Update tiap hari jam 09:00 ⚡</span>
   </div>
 </div>
 
-<!-- MENU -->
 <div class="menu">
-  <a href="https://cekareaxl.vercel.app">📍 Cek Area</a>
-  <a href="https://wa.me/6285340725780">👤 Admin</a>
-  <a href="https://juraganxl.my.id">📦 Cek Stok</a>
-  <a href="https://chat.whatsapp.com/F0dEhZzz1HkHLHFOzIOMQj">👥 Grup</a>
+  <a href="#">📍 Cek Area</a>
+  <a href="#">👤 Admin</a>
+  <a href="#">📦 Cek Stok</a>
+  <a href="#">👥 Grup</a>
 </div>
 
-<!-- SELECT -->
 <select id="area" onchange="render()">
 <option value="">Pilih Area Kamu</option>
 <option value="1">Area 1</option>
@@ -209,21 +237,24 @@ select{
 <option value="4">Area 4</option>
 </select>
 
-<!-- RESULT -->
-<div id="result"></div>
-
-<!-- NOTE -->
-<div class="note">
-✅ Resmi Bergaransi<br>
-✅  Masa Aktif 28 Hari<br>
-Pastikan tidak ada paket Akrab Aktif<br>
-⚠️ Pastikan Nomor Benar<br>
-⚠️ Salah nomor = hangus<br>
+<div class="search-box">
+  <input type="text" id="search" placeholder="Cari kode produk (contoh: XDA13)" onkeyup="render()">
+  <span>🔍</span>
 </div>
 
-<!-- BRAND -->
+<div id="result"></div>
+
+<div id="notfound" style="display:none;text-align:center;font-size:13px;color:#94a3b8;margin-top:10px;">
+Produk tidak ditemukan
+</div>
+
+<div class="note">
+✅ Resmi Bergaransi<br>
+✅ Masa Aktif 28 Hari<br>
+⚠️ Pastikan nomor benar
+</div>
+
 <div class="brand">
-  <small></small>
   <small>by MR.KHENENK • 2026</small>
 </div>
 
@@ -255,7 +286,7 @@ area:{1:"31GB",2:"33GB",3:"38GB",4:"48GB"}
 {
 kode:"XDA38",
 harga:68000,
-label:"BIG",
+label:"BEST DEAL 🔥",
 best:true,
 area:{1:"38GB",2:"40GB",3:"45GB",4:"55GB"}
 },
@@ -298,32 +329,38 @@ area:{1:"65GB",2:"70GB",3:"83GB",4:"123GB"}
 
 function render(){
 const area = document.getElementById("area").value;
+const search = document.getElementById("search").value.toUpperCase();
+
 let html="";
+let found=false;
 
 data.forEach(p=>{
+if(search && !p.kode.includes(search)) return;
+
+found=true;
+
 const aktif = area ? "active" : "disabled";
 const detail = area ? p.area[area] : "Pilih area dulu";
+const highlight = search ? "best" : "";
 
 html += `
-<div class="card ${p.best ? 'best' : ''}">
+<div class="card ${p.best ? 'best' : ''} ${highlight}">
 <div class="price">Rp ${p.harga.toLocaleString()}</div>
-
-<div class="label">
-${p.kode} ${p.label ? "• "+p.label : ""}
-</div>
-
+<div class="label">${p.kode} ${p.label ? "• "+p.label : ""}</div>
 <div class="detail">${detail}</div>
-
 <a class="order ${aktif}" 
-href="https://wa.me/6285340725780?text=saya%20mau%20paket%20${p.kode}%20Rp${p.harga.toLocaleString('id-ID')}%20${detail}%20Area%20${area}">
-Order Sekarang
-</a>
+href="https://wa.me/?text=Saya mau ${p.kode} Rp${p.harga} ${detail} Area ${area}">
+Order Sekarang</a>
 </div>
 `;
 });
 
 document.getElementById("result").innerHTML=html;
+document.getElementById("notfound").style.display = found ? "none" : "block";
 }
 
 render();
 </script>
+
+</body>
+</html>
